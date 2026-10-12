@@ -12,7 +12,7 @@ const DISTANCE := 200.0
 var bounds := Rect2(-70, -55, 140, 90)
 # Hauteur du sol de référence (le dessus du quai).
 var ground_y := 1.5
-var target_size := 42.0
+var target_size := 50.0
 var camera: Camera3D
 
 var _drag := false

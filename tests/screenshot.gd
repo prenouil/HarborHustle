@@ -1,6 +1,7 @@
 # Lance le jeu et enregistre une capture d'écran.
 # Lancer : Godot --path . --script res://tests/screenshot.gd -- <fichier.png> [secondes]
-# Variables : SHOT_ZOOM (taille de la caméra, plus petit = plus près), SHOT_FOCUS ("x,z" du point visé).
+# Variables : SHOT_ZOOM (taille de la caméra, plus petit = plus près), SHOT_FOCUS ("x,z" du point visé),
+# SHOT_UNLOAD (lance le déchargement dès le départ).
 extends SceneTree
 
 var _out := "user://shot.png"
@@ -30,6 +31,8 @@ func _process(delta: float) -> bool:
 			if OS.has_environment("SHOT_FOCUS"):
 				var xz := OS.get_environment("SHOT_FOCUS").split(",")
 				rig.position = Vector3(float(xz[0]), rig.ground_y, float(xz[1]))
+		if OS.has_environment("SHOT_UNLOAD"):
+			current_scene.unloading.start()
 	if _elapsed < _wait:
 		return false
 	var image := root.get_texture().get_image()
