@@ -27,12 +27,13 @@ const HOIST_SPEED := 7.0
 
 var trolley: Node3D
 var spreader: Node3D
+# Position de repos le long du quai : c'est là que les camions viennent se faire charger.
+var home_x := 0.0
 var _cables: Array[MeshInstance3D] = []
-var _home_x := 0.0
 
 
 func _ready() -> void:
-	_home_x = position.x
+	home_x = position.x
 	_build_frame()
 	_build_trolley()
 	_build_spreader()
@@ -63,7 +64,12 @@ func transfer(container: Node3D, truck) -> void:
 # Retour en position de repos.
 func park() -> void:
 	await _hoist(SAFE_Y)
-	await _travel(_home_x, HOME_Z)
+	await _travel(home_x, HOME_Z)
+
+
+# Emprise au sol (x, z) : les sommiers sur les deux rails.
+func footprint() -> Rect2:
+	return Rect2(position.x - LEG_X - 1.0, position.z + LEG_ZS[1] - 0.7, LEG_X * 2.0 + 2.0, LEG_ZS[0] - LEG_ZS[1] + 1.4)
 
 
 func _travel(x: float, z: float) -> void:

@@ -15,6 +15,10 @@ const CONTAINER_COLORS := [
 
 # Containers prêts à être déchargés, du haut des piles vers le bas.
 var containers: Array[Node3D] = []
+# Graine du chargement (couleurs et hauteur des piles), à choisir avant l'ajout à la scène.
+var rng_seed := 7
+# Vrai quand le bateau est amarré au quai.
+var moored := false
 
 var _base_y := 0.0
 var _time := 0.0
@@ -32,6 +36,13 @@ func _process(delta: float) -> void:
 	_time += delta
 	position.y = _base_y + sin(_time * 0.6) * 0.08
 	rotation.x = sin(_time * 0.45) * 0.006
+
+
+# Navigue le long du quai jusqu'à x (proue vers +x).
+func sail_to(x: float, duration: float, easing: Tween.EaseType) -> void:
+	var tween := create_tween().set_trans(Tween.TRANS_SINE).set_ease(easing)
+	tween.tween_property(self, "position:x", x, duration)
+	await tween.finished
 
 
 # Point d'amarrage sur le pont, en coordonnées locales (avant > 0, arrière < 0).
@@ -83,7 +94,7 @@ func _build_castle() -> void:
 
 func _build_containers() -> void:
 	var rng := RandomNumberGenerator.new()
-	rng.seed = 7
+	rng.seed = rng_seed
 	var bays := 6
 	var rows := 4
 	var first_x := -LENGTH * 0.5 + 11.5

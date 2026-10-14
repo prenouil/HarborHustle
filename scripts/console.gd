@@ -60,4 +60,4 @@ func footprint() -> Rect2:
 
 # Où le héros se place pour l'utiliser.
 func stand_point() -> Vector3:
-	return global_position + Vector3(0, 0, 1.3)
+	return to_global(Vector3(0, 0, 1.3))

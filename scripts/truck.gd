@@ -1,5 +1,6 @@
-# Camion porte-containers : il roule vers -x, reçoit 4 containers (2 de long, 2 de haut) puis repart.
-# Repère local : origine au centre de la remorque, au niveau du sol ; la cabine est côté -x.
+# Camion porte-containers : 4 containers (2 de long, 2 de haut).
+# Repère local : origine au centre de la remorque, au niveau du sol ; la cabine est côté -x
+# (rotation.y = PI pour rouler vers +x).
 extends Node3D
 
 const Blocks = preload("res://scripts/blocks.gd")
@@ -11,6 +12,10 @@ const SLOT_XS := [-3.1, 3.1]
 
 var cargo: Array[Node3D] = []
 var cab_color := Color("#d6402f")
+# « idle » (disponible, hors de l'écran), « to_crane », « loading », « to_hangar », « unloading », « returning ».
+var state := "idle"
+# Containers en cours de déchargement par les dockers.
+var pending := 0
 
 
 func _ready() -> void:
@@ -32,18 +37,27 @@ func load_container(container: Node3D) -> void:
 	cargo.append(container)
 
 
-func drive_to(x: float, duration: float) -> void:
+# Roule tout droit jusqu'à x (EASE_OUT : freine à l'arrivée, EASE_IN : démarre).
+func drive(x: float, duration: float, easing: Tween.EaseType) -> void:
+	var tween := create_tween().set_trans(Tween.TRANS_SINE).set_ease(easing)
+	tween.tween_property(self, "position:x", x, duration)
+	await tween.finished
+
+
+# Arrive sur la voie et se gare en se décalant vers la place de stationnement.
+func park(x: float, bay_z: float, duration: float) -> void:
 	var tween := create_tween().set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
 	tween.tween_property(self, "position:x", x, duration)
+	tween.parallel().tween_property(self, "position:z", bay_z, duration * 0.4).set_delay(duration * 0.55)
 	await tween.finished
 
 
-# Démarre, sort de l'écran et disparaît avec son chargement.
-func drive_away(x: float, duration: float) -> void:
-	var tween := create_tween().set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+# Quitte sa place, rejoint la voie et s'éloigne jusqu'à x.
+func leave(x: float, lane_z: float, duration: float) -> void:
+	var tween := create_tween().set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
 	tween.tween_property(self, "position:x", x, duration)
+	tween.parallel().tween_property(self, "position:z", lane_z, duration * 0.35)
 	await tween.finished
-	queue_free()
 
 
 func _slot(i: int) -> Vector3:
