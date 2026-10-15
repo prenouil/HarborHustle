@@ -19,6 +19,8 @@ Direction artistique : celle de Globozone (blocs low-poly, couleurs franches, am
 Godot : `C:\Users\user\Desktop\Godot_v4.7.2-stable_win64.exe\Godot_v4.7.2-stable_win64_console.exe`
 
 - Importer (après ajout de fichiers) : `Godot --headless --path . --import`
+- Générer l'exe Windows : `Godot --headless --path . --export-release "Windows Desktop" build/HarborHustle.exe`
+  (le dossier `build/` doit exister ; il n'est pas versionné)
 - Partie complète automatisée : `Godot --headless --path . --script res://tests/test_game.gd`
 - Capture d'écran : `Godot --path . --script res://tests/screenshot.gd -- <fichier.png> [secondes de jeu]`
   (variables décrites en tête du script : `SHOT_ZOOM`, `SHOT_FOCUS`, `SHOT_SETUP`, `SHOT_UNLOAD`, `SHOT_SPEED`,
